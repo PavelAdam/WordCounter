@@ -1,29 +1,42 @@
-from tkinter import *
+#! Программа подсчета слов в файле
+import os
 
-window = Tk()
-window.title("Word Counter")
-window.geometry("400x300+300+250")
 
-clicks = 0
+def get_words(filename):
+    with open(filename, encoding="utf8") as file:
+        text = file.read()
+    text = text.replace("\n", " ")
+    text = text.replace(",", "").replace(".", "").replace("?", "").replace("!", "")
+    text = text.lower()
+    words = text.split()
+    words.sort()
+    return words
 
-def click_button():
-    global clicks
-    clicks += 1
-    window.title("Clicks {}".format(clicks))
 
-btn = Button(text="Load file",          # текст кнопки
-             background="#D3D3D3",     # фоновый цвет кнопки
-             foreground="#000000",     # цвет текста
-             padx="20",             # отступ от границ до содержимого по горизонтали
-             pady="10",              # отступ от границ до содержимого по вертикали
-             font="16",              # высота шрифта
-             command=click_button
-             )
-btn.place(relx=.5, rely=.5, anchor="c", height=30, width=130, bordermode=OUTSIDE)
+def get_words_dict(words):
+    words_dict = dict()
 
-input = StringVar()
+    for word in words:
+        if word in words_dict:
+            words_dict[word] = words_dict[word] + 1
+        else:
+            words_dict[word] = 1
+    return words_dict
 
-input_word = Entry(textvariable=input)
-input_word.place(relx=.5, rely=.1, anchor="c")
 
-window.mainloop()
+def main():
+    filename = input("Введите путь к файлу: ")
+    if not os.path.exists(filename):
+        print("Указанный файл не существует")
+    else:
+        words = get_words(filename)
+        words_dict = get_words_dict(words)
+        print("Кол-во слов: %d" % len(words))
+        print("Кол-во уникальных слов: %d" % len(words_dict))
+        print("Все использованные слова:")
+        for word in words_dict:
+            print(word.ljust(20), words_dict[word])
+
+
+if __name__ == "__main__":
+    main()
